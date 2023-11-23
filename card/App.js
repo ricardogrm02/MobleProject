@@ -3,6 +3,7 @@ import {StyleSheet, View, TextInput, Button, SafeAreaView,Text, ScrollView, Pres
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import {Camera, useCameraDevice} from 'react-native-vision-camera';
 // import { useNavigation } from '@react-navigation/native';
 
 const Stack = createNativeStackNavigator();
@@ -63,7 +64,7 @@ function HomeScreen ({navigation})  {
     <View style={[styles.playerDisplay, {backgroundColor: currentPlayer === 'X' ? context.playerOneColor: context.playerTwoColor }]}>
       <Text style = {[styles.playerName]}> CARD CALAMITY COLLECTOR</Text>
     </View>
-    <ImageBackground style = {styles.backgroundImage} source = {require('./images/space_phone.jpg')}>
+    <ImageBackground style = {styles.backgroundImage} source = {require('./images/hex_pattern.jpg')}>
       <View style = {{paddingTop: 20, rowGap: 50, width: 150, justifyContent: 'center', alignItems: 'center', left: 5}}>
         <Button title = "Edit Deck"   onPress = {() => {navigation.navigate('Second')}} />
         <Button title = "View Collection" style = {styles.buttonRight} onPress = {() => {navigation.navigate('Third')}}/>
@@ -88,41 +89,31 @@ function EditDeckScreen({navigation}) {
         <Image style = {{height: 100, width: 100, flex: 1, resizeMode: 'contain', justifyContent: 'center', left: 0, top: 270}} source = {require('./images/deck.jpg')}></Image>
       </View>
       <View style = {styles.ViewSeperator}>
-        <Text style = {{color: 'white'}}>CARDS IN DECK HERE</Text>
+        <Text style = {{color: 'white'}}>CARDS IN DECK</Text>
       </View>
       <ScrollView style = {styles.collection}>
         <View style = {styles.collectionContent}>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
+        {context.collection.map((item) => {
+          return (
+          <Pressable>
+          <Image style = {{height: 125, width: 125,  resizeMode: 'contain'}} source = {{uri: item.name}}></Image>
+          </Pressable>
+          )
+        })}
         </View>
       </ScrollView>
       <View style = {styles.ViewSeperator}>
-        <Text style = {{color: 'white'}}>SCROLL TO VIEW CARDS IN DECK BELOW</Text>
+        <Text style = {{color: 'white'}}>CARDS IN COLLECTION</Text>
       </View>
       <ScrollView style = {styles.collection}>
       <View style = {styles.collectionContent}> 
-      <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
+      {context.collection.map((item) => {
+          return (
+          <Pressable>
+          <Image style = {{height: 125, width: 125,  resizeMode: 'contain'}} source = {{uri: item.name}}></Image>
+          </Pressable>
+          )
+        })}
       </View>
       </ScrollView>
     </SafeAreaView>
@@ -131,6 +122,7 @@ function EditDeckScreen({navigation}) {
 }
 
 function CardSearchScreen({navigation}) {
+  const context = React.useContext(AppContext);
     /*POTENTIAL API: https://ygoprodeck.com/api-guide/*/
   return(
 <SafeAreaView style= {styles.screen}>
@@ -154,6 +146,7 @@ function CardSearchScreen({navigation}) {
 }
 
 function CardCreationScreen({navigation}) {
+  const context = React.useContext(AppContext);
   /* USING CAMERA*/
     return(
     <SafeAreaView style= {styles.screen}>
@@ -176,6 +169,7 @@ function CardCreationScreen({navigation}) {
 }
 
 function CollectionScreen({navigation}) {
+  const context = React.useContext(AppContext);
     return(
     <SafeAreaView style = {styles.screen}>
       <View style = {{height: 200, width: 180, justifyContent: 'center', backgroundColor: '#201F41', borderColor:'#FFFFFF', borderWidth: 1}}>
@@ -188,17 +182,13 @@ function CollectionScreen({navigation}) {
       </View>
       <ScrollView>
        <View style = {styles.collectionContent}>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
-          <Image style = {{height: 100, width: 100,  resizeMode: 'contain'}} source = {require('./images/fat_pika.jpg')}></Image>
+        {context.collection.map((item) => {
+          return (
+          <Pressable>
+          <Image style = {{height: 125, width: 125,  resizeMode: 'contain'}} source = {{uri: item.name}}></Image>
+          </Pressable>
+          )
+        })}
        </View>
       </ScrollView>
     </SafeAreaView>
@@ -222,9 +212,20 @@ const App = () => {
 //State that updates the color of the players
  const [playerOneColor, setPlayerOneColor] = useState('red');
  const [playerTwoColor, setPlayerTwoColor] = useState('blue');
- const [deck, setDeck] = useState([]);
+ const [deck, setDeck] = useState([{}]);
  const [card, setCard] = useState();
- const [collection, setCollection] = useState([]);
+ const [collection, setCollection] = useState([
+  {name: 'https://m.media-amazon.com/images/I/51sRtX0aLkL._AC_UF894,1000_QL80_.jpg'}, 
+  {name: 'https://product-images.tcgplayer.com/512092.jpg'}, 
+  {name: 'https://m.media-amazon.com/images/I/51CQbWyA7FL._AC_UF894,1000_QL80_.jpg'}, 
+  {name: 'https://m.media-amazon.com/images/I/51CQbWyA7FL._AC_UF894,1000_QL80_.jpg'}, 
+  {name: 'https://m.media-amazon.com/images/I/51CQbWyA7FL._AC_UF894,1000_QL80_.jpg'}, 
+  {name: 'https://m.media-amazon.com/images/I/51CQbWyA7FL._AC_UF894,1000_QL80_.jpg'}, 
+  {name: 'https://m.media-amazon.com/images/I/51CQbWyA7FL._AC_UF894,1000_QL80_.jpg'}, 
+  {name: 'https://m.media-amazon.com/images/I/51CQbWyA7FL._AC_UF894,1000_QL80_.jpg'}, 
+  {name: 'https://m.media-amazon.com/images/I/51CQbWyA7FL._AC_UF894,1000_QL80_.jpg'}, 
+  {name: 'https://m.media-amazon.com/images/I/51CQbWyA7FL._AC_UF894,1000_QL80_.jpg'}, 
+  {name: 'https://m.media-amazon.com/images/I/51Vp2yeBDnL._AC_UF894,1000_QL80_.jpg'}]);
  //Context Value to allow the state ot be accessed across multiple screens
  const contextValue = {
   playerOneColor, playerTwoColor, setPlayerOneColor, setPlayerTwoColor, card, deck, setDeck, setCard, collection, setCollection
@@ -402,8 +403,9 @@ textFormat: {
     flexWrap: 'wrap',
     paddingTop: 5,
     rowGap: 8,
-    justifyContent: 'center',
-    alignItems: 'center'
+    justifyContent: 'left',
+    alignItems: 'center',
+    left: 10
   }
 });
 
