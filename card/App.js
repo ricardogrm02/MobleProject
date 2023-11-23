@@ -93,7 +93,7 @@ function EditDeckScreen({navigation}) {
       </View>
       <ScrollView style = {styles.collection}>
         <View style = {styles.collectionContent}>
-        {context.collection.map((item) => {
+        {context.deck.map((item) => {
           return (
           <Pressable>
           <Image style = {{height: 125, width: 125,  resizeMode: 'contain'}} source = {{uri: item.name}}></Image>
@@ -212,7 +212,7 @@ const App = () => {
 //State that updates the color of the players
  const [playerOneColor, setPlayerOneColor] = useState('red');
  const [playerTwoColor, setPlayerTwoColor] = useState('blue');
- const [deck, setDeck] = useState([{}]);
+ const [deck, setDeck] = useState([{name: 'https://m.media-amazon.com/images/I/51sRtX0aLkL._AC_UF894,1000_QL80_.jpg'}]);
  const [card, setCard] = useState();
  const [collection, setCollection] = useState([
   {name: 'https://m.media-amazon.com/images/I/51sRtX0aLkL._AC_UF894,1000_QL80_.jpg'}, 
