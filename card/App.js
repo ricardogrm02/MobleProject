@@ -175,7 +175,7 @@ function CollectionScreen({navigation}) {
     <SafeAreaView style = {styles.screen}>
       <View style = {{height: 200, width: 180, justifyContent: 'center', backgroundColor: '#201F41', borderColor:'#FFFFFF', borderWidth: 1}}>
         <ImageBackground style = {{height: 200, width: 175}} source = {require('./images/hex_pattern.jpg')}>
-          <Image style = {{height: 150, width: 150, flex: 1, resizeMode: 'contain', left: 15}} source = {require('./images/broly.jpg')}></Image>
+          <Image style = {{height: 150, width: 150, flex: 1, resizeMode: 'contain', left: 15}} source = {{uri:context.preview}}></Image>
         </ImageBackground>
       </View>
       <View style = {styles.ViewSeperator}>
@@ -185,7 +185,7 @@ function CollectionScreen({navigation}) {
        <View style = {styles.collectionContent}>
         {context.collection.map((item) => {
           return (
-          <Pressable>
+          <Pressable onPress= {() => {context.setPreviewImage(item.name)}}>
           <Image style = {{height: 125, width: 125,  resizeMode: 'contain'}} source = {{uri: item.name}}></Image>
           </Pressable>
           )
@@ -215,6 +215,7 @@ const App = () => {
  const [playerTwoColor, setPlayerTwoColor] = useState('blue');
  const [deck, setDeck] = useState([{name: 'https://m.media-amazon.com/images/I/51sRtX0aLkL._AC_UF894,1000_QL80_.jpg'}]);
  const [card, setCard] = useState();
+ const [preview, setPreview] = useState('')
  const [collection, setCollection] = useState([
   {name: 'https://m.media-amazon.com/images/I/51sRtX0aLkL._AC_UF894,1000_QL80_.jpg'}, 
   {name: 'https://product-images.tcgplayer.com/512092.jpg'}, 
@@ -234,9 +235,15 @@ const App = () => {
    const updatedDeck = deck.filter(image => image.name != card_source)
    setDeck(updatedDeck)
   }
+
+  const setPreviewImage = (item) => {
+    if (item != ''){
+       setPreview(item)
+    }
+  } 
  //Context Value to allow the state ot be accessed across multiple screens
  const contextValue = {
-  playerOneColor, playerTwoColor, setPlayerOneColor, setPlayerTwoColor, card, deck, setDeck, setCard, collection, setCollection,  AddCardToDeck, DeleteCardFromDeck
+  playerOneColor, playerTwoColor, setPlayerOneColor, setPlayerTwoColor, card, deck, setDeck, setCard, collection, setCollection,  AddCardToDeck, DeleteCardFromDeck,setPreviewImage, preview, setPreview
  };
 
 return (
