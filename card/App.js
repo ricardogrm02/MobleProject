@@ -95,7 +95,7 @@ function EditDeckScreen({navigation}) {
         <View style = {styles.collectionContent}>
         {context.deck.map((item) => {
           return (
-          <Pressable>
+          <Pressable onPress={() => {context.DeleteCardFromDeck(item.name)}}>
           <Image style = {{height: 125, width: 125,  resizeMode: 'contain'}} source = {{uri: item.name}}></Image>
           </Pressable>
           )
@@ -109,7 +109,8 @@ function EditDeckScreen({navigation}) {
       <View style = {styles.collectionContent}> 
       {context.collection.map((item) => {
           return (
-          <Pressable>
+            /* For Every item in the Collection Array Store Display that image */
+          <Pressable onPress={() => {context.AddCardToDeck(item.name)}}>
           <Image style = {{height: 125, width: 125,  resizeMode: 'contain'}} source = {{uri: item.name}}></Image>
           </Pressable>
           )
@@ -226,9 +227,16 @@ const App = () => {
   {name: 'https://m.media-amazon.com/images/I/51CQbWyA7FL._AC_UF894,1000_QL80_.jpg'}, 
   {name: 'https://m.media-amazon.com/images/I/51CQbWyA7FL._AC_UF894,1000_QL80_.jpg'}, 
   {name: 'https://m.media-amazon.com/images/I/51Vp2yeBDnL._AC_UF894,1000_QL80_.jpg'}]);
+  const AddCardToDeck = (card_source) => {
+    setDeck([...deck, {name: card_source}])
+  }
+  const DeleteCardFromDeck = (card_source) => {
+   const updatedDeck = deck.filter(image => image.name != card_source)
+   setDeck(updatedDeck)
+  }
  //Context Value to allow the state ot be accessed across multiple screens
  const contextValue = {
-  playerOneColor, playerTwoColor, setPlayerOneColor, setPlayerTwoColor, card, deck, setDeck, setCard, collection, setCollection
+  playerOneColor, playerTwoColor, setPlayerOneColor, setPlayerTwoColor, card, deck, setDeck, setCard, collection, setCollection,  AddCardToDeck, DeleteCardFromDeck
  };
 
 return (
