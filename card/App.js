@@ -124,22 +124,46 @@ function EditDeckScreen({navigation}) {
 
 function CardSearchScreen({navigation}) {
   const context = React.useContext(AppContext);
+  const [source, setSource] = useState('')
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState()
+  const [search, confirmSearch] = useState('')
+
+
+  const updateSource = (card_name) => {
+    if (card_name != '') {
+      setSource(card_name)
+    }
+  }
+
+ const fetchImage = () => {
+
+ }
+
+ const AddCard = () => {
+
+ }
+
+
     /*POTENTIAL API: https://ygoprodeck.com/api-guide/*/
   return(
 <SafeAreaView style= {styles.screen}>
-    <Text style = {{color: '#FFFFFF'}}>Card Search Screen</Text>
     <Pressable>
     <View style = {{left: screenWidth / 2 - 90, height: 200, width: 180, justifyContent: 'center', backgroundColor: '#fdf5c4', borderColor:'#FFFFFF', borderWidth: 1, paddingTop: 10, paddingBottom: 10}}>
     <Image style = {{height: 150, width: 150, flex: 1, resizeMode: 'contain', left: 15}} source = {require('./images/search.jpg')}></Image>
     </View>
     </Pressable>
     <View style = {styles.divider}>
-      <Text>IMAGE PREVIEW HERE</Text>
+    <Image style = {{height: 150, width: 150, flex: 1, resizeMode: 'contain', left: 15}} source = {{uri: search}}></Image>
     </View>
-    <View style = {{paddingTop: 20}}> 
-    <Button title='Add to Deck'></Button>
+    <View style = {{paddingTop: 20, width: 200, height: 200, justifyContent: 'center', alignContent: 'center', rowGap: 10, flex:1, left: screenWidth / 4}}> 
+    <TextInput placeholder= 'Enter Card Name' onChangeText={(value) => updateSource(value)} style = {{borderWidth: 3, backgroundColor: '#fdf5c4', borderColor: '#0F0F0F'}}></TextInput>
+    <Button title='Search Card' onPress={() => confirmSearch(source)}></Button>
+    <Button title='Add to Collection' onPress={() => context.AddCardToCollection(search)}></Button>
     <Button title='View Collection' onPress={() => {navigation.navigate('Third')} }></Button>
     <Button title='Edit Deck'  onPress={() => {navigation.navigate('Second')} }></Button>
+    <Button title={source}  onPress={() => {navigation.navigate('Second')} }></Button>
     </View>
     </SafeAreaView>
   );
@@ -148,6 +172,7 @@ function CardSearchScreen({navigation}) {
 
 function CardCreationScreen({navigation}) {
   const context = React.useContext(AppContext);
+  const [source, setCardSource] = useState('')
   /* USING CAMERA*/
     return(
     <SafeAreaView style= {styles.screen}>
@@ -161,6 +186,7 @@ function CardCreationScreen({navigation}) {
         <Text>IMAGE PREVIEW HERE</Text>
     </View>
     <View style = {{paddingTop: 20}}> 
+    <Button title='Search Card'></Button>
     <Button title='Add to Deck'></Button>
     <Button title='View Collection' onPress={() => {navigation.navigate('Third')} }></Button>
     <Button title='Edit Deck'  onPress={() => {navigation.navigate('Second')} }></Button>
@@ -231,6 +257,10 @@ const App = () => {
   const AddCardToDeck = (card_source) => {
     setDeck([...deck, {name: card_source}])
   }
+
+  const AddCardToCollection = (card_source) => {
+    setCollection([...collection, {name: card_source}])
+  }
   const DeleteCardFromDeck = (card_source) => {
    const updatedDeck = deck.filter(image => image.name != card_source)
    setDeck(updatedDeck)
@@ -243,7 +273,7 @@ const App = () => {
   } 
  //Context Value to allow the state ot be accessed across multiple screens
  const contextValue = {
-  playerOneColor, playerTwoColor, setPlayerOneColor, setPlayerTwoColor, card, deck, setDeck, setCard, collection, setCollection,  AddCardToDeck, DeleteCardFromDeck,setPreviewImage, preview, setPreview
+  playerOneColor, playerTwoColor, setPlayerOneColor, setPlayerTwoColor, card, deck, setDeck, setCard, collection, setCollection,  AddCardToDeck, DeleteCardFromDeck,setPreviewImage, preview, setPreview, AddCardToCollection
  };
 
 return (
