@@ -377,7 +377,7 @@ const App = () => {
  const contextValue = {
   playerOneColor, playerTwoColor, setPlayerOneColor, setPlayerTwoColor, card, deck, setDeck, setCard, collection, setCollection,  AddCardToDeck, DeleteCardFromDeck,setPreviewImage, preview, setPreview, AddCardToCollection
  };
-
+ 
 return (
   <AppContext.Provider value ={contextValue} > 
  <NavigationContainer>
