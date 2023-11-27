@@ -180,7 +180,6 @@ function CardSearchScreen({navigation}) {
     )}
     {cardData && (
       <View>
-          <Text>{cardData.card_images[0].image_url}</Text>
           <Image
             source={{ uri: cardData.card_images[0].image_url }}
             style={{ width: 300, height: 300, resizeMode: 'contain'}}
