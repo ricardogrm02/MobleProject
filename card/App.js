@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useRef, useState } from 'react';
 import {StyleSheet, View, TextInput, Button, SafeAreaView,Text, ScrollView, Pressable, Dimensions, ImageBackground, Image, ActivityIndicator} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -210,24 +210,89 @@ function CardSearchScreen({navigation}) {
 function CardCreationScreen({navigation}) {
   const context = React.useContext(AppContext);
   const [source, setCardSource] = useState('')
+  const [perm, setPerm] = useState(false);
+  const [initialized, setinitialized] = useState(false);
+  const [photo, setPhoto] = useState(null);
+
+  const device = useCameraDevice('back');
+
+  const camera = useRef(null);
+
+  if (!initialized) {
+    Camera.requestCameraPermission()
+      .then(granted => setPerm(granted))
+      .catch(e => console.warn(`could not perm: ${e}`));
+  }
+  if (!perm) {
+    return (
+        <SafeAreaView style={{ display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: '#ecf0f1',
+        alignItems: 'center',}}>
+          <Text style={styles.errorText}>No permissions</Text>
+        </SafeAreaView>
+    );
+  }
+
+  if (!device) {
+    return (
+        <SafeAreaView style={{ display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: '#ecf0f1',
+        alignItems: 'center',}}>
+          <Text style={styles.errorText}>No cam yet</Text>
+        </SafeAreaView>
+     
+    );
+  }
+  const takePhoto = () => {
+    if (!initialized) {
+      console.log("can't click yet");
+      return;
+    }
+
+    console.log('click');
+
+    camera.current
+      .takePhoto()
+      .then(img => {
+        // result of a snap is a object that has the file path in it.
+
+        //console.log(JSON.stringify(img, null, 2));
+        const asPath = `file://${img.path}`;
+        setPhoto(asPath);
+      })
+      .catch(e => console.warn(`could not takePhoto: ${e}`));
+  };
+
   /* USING CAMERA*/
     return(
     <SafeAreaView style= {styles.screen}>
-    <Text style = {{color: '#FFFFFF'}}>Card Creation Screen</Text>
-    <Pressable>
-    <View style = {{left: screenWidth / 2 - 90, height: 200, width: 180, justifyContent: 'center', backgroundColor: '#fdf5c4', borderColor:'#FFFFFF', borderWidth: 1, paddingTop: 10, paddingBottom: 10}}>
-    <Image style = {{height: 150, width: 150, flex: 1, resizeMode: 'contain', left: 15}} source = {require('./images/camera_icon.jpg')}></Image>
+      <ScrollView>
+      <View style = {{justifyContent: 'center', alignContent: 'center', rowGap: 10, flext: 1, left: 50, paddingTop: 10}}>
+      <Camera
+          ref={camera}
+          style={styles.cameraViewfinder}
+          device={device}
+          isActive={true}
+          photo={true}
+          onInitialized={() => setinitialized(true)}
+        />
+     {photo? (
+          <Image style={styles.cameraPhotoResult} source={{uri: photo}} />
+        ) : (
+          <Text style={styles.pictureInfo}>Take a picture</Text>
+        )}
     </View>
-    </Pressable>
-    <View style = {styles.divider}>
-        <Text>IMAGE PREVIEW HERE</Text>
-    </View>
-    <View style = {{paddingTop: 20}}> 
-    <Button title='Search Card'></Button>
-    <Button title='Add to Deck'></Button>
+    <View style = {{width: 200, height: 200, justifyContent: 'center', alignContent: 'center', rowGap: 10, flex:1, left: screenWidth / 4}}>
+    <Button title='Take Photo' onPress={takePhoto}></Button>
+    {photo != null && (
+      <Button title='Add to Collection' onPress={() => context.AddCardToCollection(photo)}></Button>
+    )}
     <Button title='View Collection' onPress={() => {navigation.navigate('Third')} }></Button>
     <Button title='Edit Deck'  onPress={() => {navigation.navigate('Second')} }></Button>
     </View>
+    </ScrollView>
     </SafeAreaView>
     );
 }
@@ -488,7 +553,39 @@ textFormat: {
     justifyContent: 'left',
     alignItems: 'center',
     left: 10
-  }
+  }, 
+  cameraViewfinder: {
+    flex: 0,
+    width: 300,
+    height: 300,
+  },
+
+  cameraPhotoResult: {
+    flex: 0,
+    width: 300,
+    height: 300,
+    borderColor: 'green',
+    borderWidth: 3,
+  },
+  pictureInfo: {
+    flex: 0,
+    width: 300,
+    height: 300,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    color: 'black',
+    backgroundColor: '#cccccc',
+    fontSize: 18,
+  }, 
+
+  errorText: {
+    flex: 1,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    color: 'black',
+    backgroundColor: 'white',
+    fontSize: 18,
+  },
 });
 
 export default App;

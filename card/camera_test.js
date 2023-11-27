@@ -48,7 +48,7 @@ const App = () => {
     return (
       <SafeAreaProvider>
         <SafeAreaView style={styles.container}>
-          <Text style={styles.error}>No permissions</Text>
+          <Text style={styles.errorText}>No permissions</Text>
         </SafeAreaView>
       </SafeAreaProvider>
     );
@@ -58,7 +58,7 @@ const App = () => {
     return (
       <SafeAreaProvider>
         <SafeAreaView style={styles.container}>
-          <Text style={styles.error}>No cam yet</Text>
+          <Text style={styles.errorText}>No cam yet</Text>
         </SafeAreaView>
       </SafeAreaProvider>
     );
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     borderColor: 'green',
     borderWidth: 3,
   },
-  error: {
+  errorText: {
     flex: 1,
     textAlign: 'center',
     textAlignVertical: 'center',
