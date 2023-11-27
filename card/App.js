@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
-import {StyleSheet, View, TextInput, Button, SafeAreaView,Text, ScrollView, Pressable, Dimensions, ImageBackground, Image} from 'react-native';
+import {StyleSheet, View, TextInput, Button, SafeAreaView,Text, ScrollView, Pressable, Dimensions, ImageBackground, Image, ActivityIndicator} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
@@ -124,50 +124,88 @@ function EditDeckScreen({navigation}) {
 
 function CardSearchScreen({navigation}) {
   const context = React.useContext(AppContext);
-  const [source, setSource] = useState('')
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState()
+  const [cardName, setCardName] = useState('')
   const [search, confirmSearch] = useState('')
+  const [cardData, setCardData] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [fetchStatus, setFetchStatus] = useState('')
+  const [imageURL, setImageURl] = useState('')
 
 
   const updateSource = (card_name) => {
     if (card_name != '') {
-      setSource(card_name)
+      setCardName(card_name)
     }
   }
 
- const fetchImage = () => {
+  const cardSearch = async () => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      const response = await fetch(`https://db.ygoprodeck.com/api/v7/cardinfo.php?name=${encodeURIComponent(cardName)}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok.')
+      }
+      const jsonData = await response.json()
+      if (jsonData.data.length > 0) {
+        setCardData(jsonData.data[0])
+        setFetchStatus(`Fetched data for: ${cardName}`)
+        setImageURl(cardData.card_images[0].image_url)
+      } else {
+        setFetchStatus(`No data for: ${cardName}`)
+        setCardData(null)
+      }
+    } catch (error) {
+      setError(`Error occured. Try again`)
+      console.error('Error fetching card data: ', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
- }
+  const AddtoCollection = () => {
+    if (cardData != null) {
+      context.AddCardToCollection([...context.collection, {name: cardData.card_images[0].image_url}])
+    }
+  }
 
- const AddCard = () => {
-
- }
-
-
+  /*STYLE FOR TEXT INPUT: style = {{borderWidth: 3, backgroundColor: '#fdf5c4', borderColor: '#0F0F0F'}} */
     /*POTENTIAL API: https://ygoprodeck.com/api-guide/*/
   return(
 <SafeAreaView style= {styles.screen}>
-    <Pressable>
-    <View style = {{left: screenWidth / 2 - 90, height: 200, width: 180, justifyContent: 'center', backgroundColor: '#fdf5c4', borderColor:'#FFFFFF', borderWidth: 1, paddingTop: 10, paddingBottom: 10}}>
-    <Image style = {{height: 150, width: 150, flex: 1, resizeMode: 'contain', left: 15}} source = {require('./images/search.jpg')}></Image>
+  <View style = {{justifyContent: 'center', alignItems: 'center', paddingTop: 10}}>
+    {isLoading && (
+      <ActivityIndicator size="large" color="#0000ff" />
+    )}
+    {cardData && (
+      <View>
+          <Text>{cardData.card_images[0].image_url}</Text>
+          <Image
+            source={{ uri: cardData.card_images[0].image_url }}
+            style={{ width: 300, height: 300, resizeMode: 'contain'}}
+          />
+      </View>
+          )}
+
+    {!cardData && (
+         <View style = {{backgroundColor: "#FFFFFF", height: 300, width: 300}}>
+            <Text style = {{color: 'red', fontWeight: 'bold'}}>Image Will Load here after Searching</Text>
+        </View>
+    )}
     </View>
-    </Pressable>
-    <View style = {styles.divider}>
-    <Image style = {{height: 150, width: 150, flex: 1, resizeMode: 'contain', left: 15}} source = {{uri: search}}></Image>
-    </View>
-    <View style = {{paddingTop: 20, width: 200, height: 200, justifyContent: 'center', alignContent: 'center', rowGap: 10, flex:1, left: screenWidth / 4}}> 
-    <TextInput placeholder= 'Enter Card Name' onChangeText={(value) => updateSource(value)} style = {{borderWidth: 3, backgroundColor: '#fdf5c4', borderColor: '#0F0F0F'}}></TextInput>
-    <Button title='Search Card' onPress={() => confirmSearch(source)}></Button>
-    <Button title='Add to Collection' onPress={() => context.AddCardToCollection(search)}></Button>
+    <View style = {{width: 200, height: 200, justifyContent: 'center', alignContent: 'center', rowGap: 10, flex:1, left: screenWidth / 4}}> 
+    <TextInput placeholder='Enter Card Name'onChangeText={text => setCardName(text)} value={cardName} style  = {{borderWidth: 3, backgroundColor: '#fdf5c4', borderColor: '#0F0F0F'}}></TextInput>
+    <Button title= 'Search Card Image' onPress={cardSearch}></Button>
+    {cardData && (
+      <Button title='Add to Collection' onPress={() => context.AddCardToCollection(cardData.card_images[0].image_url)}></Button>
+          )}
     <Button title='View Collection' onPress={() => {navigation.navigate('Third')} }></Button>
     <Button title='Edit Deck'  onPress={() => {navigation.navigate('Second')} }></Button>
-    <Button title={source}  onPress={() => {navigation.navigate('Second')} }></Button>
+    <Text>{imageURL}</Text>
     </View>
     </SafeAreaView>
   );
-
 }
 
 function CardCreationScreen({navigation}) {
